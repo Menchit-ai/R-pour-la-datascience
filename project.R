@@ -1,4 +1,16 @@
-data <- read.table("abo.csv",header = TRUE, sep = ",")
-print(summary(data))
-print("Done")
+library(tidyr)
+library(ggplot2)
 
+data <- read.table("abo.csv",header = TRUE, sep = ",")
+#print(head(data))
+#data_long <- pivot_longer(data, "Variable")
+
+colnames(data) <- c("LOCATION","Pays","VAR","Variable","TIME","Temps","Unit Code","Unit","PowerCode Code","PowerCode","Reference Period Code","Reference Period","Value","Flag Codes","Flags")
+
+select <- c("LOCATION","VAR","TIME","Unit Code","PowerCode Code","PowerCode","Reference Period Code","Value","Flag Codes","Flags")
+data_c <- data[select]
+# write.csv(data_c, file = "data_c.csv", sep = ",")
+print(unique(data["Flag Codes"]))
+print(unique(data["Flags"]))
+
+print("Done")

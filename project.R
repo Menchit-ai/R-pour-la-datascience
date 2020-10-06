@@ -1,5 +1,7 @@
 library(tidyr)
 library(ggplot2)
+library(dplyr)
+library(lubridate)
 
 data <- read.table("abo.csv",header = TRUE, sep = ",")
 #print(head(data))
@@ -12,7 +14,23 @@ data_c <- data[select]
 data_c$VAR <- as.factor(data_c$VAR)
 
 
-write.csv(data_c, file = "data_c.csv", row.names=FALSE)
+df = read.table("abo.csv", header = TRUE, sep = ",")
+colnames(df)[1] <- "LOCATION"
+data <- subset(df, select=c(LOCATION, VAR, TIME, Value))
+summary(data)
+data$LOCATION <- as.factor(data$LOCATION)
+data$VAR <- as.factor(data$VAR)
+data$TIME <- as.factor(data$TIME)
+summary(data)
+dataTotAbo = subset(data, subset= VAR=="BB-P100-TOT")
+
+select <- c("2016","2017","2018","2019")
+data <- subset(data, subset = TIME==select)
+data$TIME <- year(as.Date(data$TIME, format="%Y"))
+data <- group_by(data,LOCATION)
+
+
+write.csv(data, file = "data.csv", row.names=FALSE)
 cat("\n########################\n")
 cat("          Done")
 cat("\n########################\n")

@@ -3,17 +3,14 @@ library(shiny)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-<<<<<<< HEAD
-=======
 
 #install.packages("gridExtra")
 library(gridExtra)
 
 #install.packages("shinyWidgets")
->>>>>>> dae407e0594ea61a6ba813f7af6047f1897b8338
 library(shinyWidgets)
 
-df = read.table("abo.csv", header = TRUE, sep = ",")
+df = read.table("data.csv", header = TRUE, sep = ",")
 colnames(df)[1] <- "LOCATION"
 data <- subset(df, select=c(LOCATION, VAR, TIME, Value))
 summary(data)
@@ -31,11 +28,6 @@ p <- ggplot(dataTotAbo, aes(x=LOCATION, y=Value, color=LOCATION))
 p <- p + geom_point()
 p <- p + facet_wrap(~TIME, ncol=4)
 p <- p + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
-
-g <- group_by(data, VAR, TIME)
-write.csv(g, file = "g.csv", row.names=FALSE)
-s <- summarize(g, mean=mean(Value), na.rm=TRUE)
-write.csv(s, file = "s.csv", row.names=FALSE)
 
 ui <- fluidPage(
     titlePanel("Total Abo par pays"),
@@ -68,7 +60,7 @@ ui <- fluidPage(
             sliderTextInput(inputId = "VAR",
                             label = "Category",
                             grid = TRUE,
-                            choices = levels(s$VAR)
+                            choices = levels(data$VAR)
             )
         ),
         mainPanel(
@@ -87,23 +79,12 @@ server <- function(input, output) {
             theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
     }) 
     output$plot2 <- renderPlot({
-        s %>%
+        data %>%
             filter(VAR==input$VAR) %>%
             ggplot() +
-            geom_bar(aes(TIME, mean, fill=TIME), stat = "identity") +
+            geom_bar(aes(TIME, Value, fill=TIME), stat = "identity") +
             theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
     })
-<<<<<<< HEAD
-    output$plot2 <- renderPlot({
-        dataTotAbo %>%
-            filter(TIME==input$TIME) %>%
-            ggplot(aes(x=LOCATION, y=Value, color=LOCATION)) +
-            geom_point() +
-            theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
-    })
-=======
-
->>>>>>> dae407e0594ea61a6ba813f7af6047f1897b8338
 }
 
 shinyApp(ui = ui, server = server)

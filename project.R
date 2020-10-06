@@ -25,7 +25,7 @@ summary(data)
 dataTotAbo = subset(data, subset= VAR=="BB-P100-TOT")
 
 select <- c("2016","2017","2018","2019")
-data <- subset(data, subset = TIME==select)
+data <- subset(data, subset = TIME %in% select)
 data$TIME <- year(as.Date(data$TIME, format="%Y"))
 data <- group_by(data,LOCATION)
 

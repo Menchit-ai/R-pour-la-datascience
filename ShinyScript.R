@@ -3,8 +3,6 @@ library(shiny)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-
-install.packages("shinyWidgets")
 library(shinyWidgets)
 
 df = read.table("abo.csv", header = TRUE, sep = ",")
@@ -56,13 +54,21 @@ ui <- fluidPage(
         ),
         
         mainPanel(
-            plotOutput(outputId = "plot")
+            plotOutput(outputId = "plot"),
+            plotOutput(outputId = "plot2")
         )
     )
 )
 
 server <- function(input, output) {
     output$plot <- renderPlot({
+        dataTotAbo %>%
+            filter(TIME==input$TIME) %>%
+            ggplot(aes(x=LOCATION, y=Value, color=LOCATION)) +
+            geom_point() +
+            theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+    })
+    output$plot2 <- renderPlot({
         dataTotAbo %>%
             filter(TIME==input$TIME) %>%
             ggplot(aes(x=LOCATION, y=Value, color=LOCATION)) +

@@ -4,7 +4,10 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 
-install.packages("shinyWidgets")
+#install.packages("gridExtra")
+library(gridExtra)
+
+#install.packages("shinyWidgets")
 library(shinyWidgets)
 
 df = read.table("abo.csv", header = TRUE, sep = ",")
@@ -52,11 +55,17 @@ ui <- fluidPage(
             sliderTextInput(inputId = "TIME",
                         label = "Year",
                         grid = TRUE,
-                        choices = levels(dataTotAbo$TIME) )
+                        choices = levels(dataTotAbo$TIME)
+            ),
+            sliderTextInput(inputId = "VAR",
+                            label = "Category",
+                            grid = TRUE,
+                            choices = levels(data$VAR)
+            )
         ),
-        
         mainPanel(
-            plotOutput(outputId = "plot")
+            plotOutput(outputId = "plot"),
+            plotOutput(outputId = "plot2")
         )
     )
 )
@@ -65,10 +74,18 @@ server <- function(input, output) {
     output$plot <- renderPlot({
         dataTotAbo %>%
             filter(TIME==input$TIME) %>%
-            ggplot(aes(x=LOCATION, y=Value, color=LOCATION)) +
-            geom_point() +
+            ggplot() +
+            geom_bar(aes(LOCATION, Value, fill=LOCATION), stat = "identity") +
+            theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+    }) 
+    output$plot2 <- renderPlot({
+        data %>%
+            filter(VAR==input$VAR) %>%
+            ggplot() +
+            geom_bar(aes(TIME, Value, fill=TIME), stat = "identity") +
             theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
     })
+
 }
 
 shinyApp(ui = ui, server = server)

@@ -29,6 +29,11 @@ p <- p + geom_point()
 p <- p + facet_wrap(~TIME, ncol=4)
 p <- p + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 
+g <- group_by(data, VAR, TIME)
+write.csv(g, file = "g.csv", row.names=FALSE)
+s <- summarize(g, mean=mean(Value), na.rm=TRUE)
+write.csv(s, file = "s.csv", row.names=FALSE)
+
 ui <- fluidPage(
     titlePanel("Total Abo par pays"),
     mainPanel(plotOutput(outputId = "plot"))
@@ -60,7 +65,7 @@ ui <- fluidPage(
             sliderTextInput(inputId = "VAR",
                             label = "Category",
                             grid = TRUE,
-                            choices = levels(data$VAR)
+                            choices = levels(s$VAR)
             )
         ),
         mainPanel(
@@ -79,10 +84,10 @@ server <- function(input, output) {
             theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
     }) 
     output$plot2 <- renderPlot({
-        data %>%
+        s %>%
             filter(VAR==input$VAR) %>%
             ggplot() +
-            geom_bar(aes(TIME, Value, fill=TIME), stat = "identity") +
+            geom_bar(aes(TIME, mean, fill=TIME), stat = "identity") +
             theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
     })
 

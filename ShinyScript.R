@@ -64,8 +64,14 @@ ui <- fluidPage(
             )
         ),
         mainPanel(
-            plotOutput(outputId = "plot"),
-            plotOutput(outputId = "plot2")
+            
+            tabsetPanel(type = "tabs",
+                        tabPanel("Plot", plotOutput(outputId = "plot")),
+                        tabPanel("Plot2", plotOutput(outputId = "plot2")),
+                        tabPanel("Plot3", plotOutput(outputId = "plot3"))
+            )
+            #plotOutput(outputId = "plot"),
+            #plotOutput(outputId = "plot2")
         )
     )
 )
@@ -83,6 +89,13 @@ server <- function(input, output) {
             filter(VAR==input$VAR) %>%
             ggplot() +
             geom_bar(aes(TIME, Value, fill=TIME), stat = "identity") +
+            theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+    })
+    output$plot3 <- renderPlot({
+        dataTotAbo %>%
+            filter(TIME==input$TIME) %>%
+            ggplot() +
+            geom_bar(aes(LOCATION, Value, fill=LOCATION), stat = "identity") +
             theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
     })
 }

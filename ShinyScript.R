@@ -66,8 +66,8 @@ ui <- fluidPage(
         mainPanel(
             
             tabsetPanel(type = "tabs",
-                        tabPanel("Plot", plotOutput(outputId = "plot")),
-                        tabPanel("Plot2", plotOutput(outputId = "plot2")),
+                        tabPanel("Plot1", plotOutput(outputId = "plot1")),
+                        tabPanel("Histo", plotOutput(outputId = "plot2")),
                         tabPanel("Plot3", plotOutput(outputId = "plot3"))
             )
             #plotOutput(outputId = "plot"),

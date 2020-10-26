@@ -10,7 +10,7 @@ library(gridExtra)
 #install.packages("shinyWidgets")
 library(shinyWidgets)
 
-df = read.table("data.csv", header = TRUE, sep = ",")
+df = read.table("data_world/data.csv", header = TRUE, sep = ",")
 colnames(df)[1] <- "LOCATION"
 data <- subset(df, select=c(LOCATION, VAR, TIME, Value))
 summary(data)
@@ -29,22 +29,15 @@ p <- p + geom_point()
 p <- p + facet_wrap(~TIME, ncol=4)
 p <- p + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 
-ui <- fluidPage(
-    titlePanel("Total Abo par pays"),
-    mainPanel(plotOutput(outputId = "plot"))
-)
+df = read.table("data_world/happiness-cantril-ladder.csv", header = TRUE, sep = ",")
+names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
-server <- function(input, output) {
-    output$plot <- renderPlot({
-        dataTotAbo %>%
-            filter(TIME=="2016") %>%
-            ggplot(aes(x=LOCATION, y=Value, color=LOCATION)) +
-            geom_point() +
-            theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
-    })
-}
+df2 = read.table("data_world/human-development-index.csv", header = TRUE, sep = ",")
+names(df2) <- c("Entity", "Code", "Year", "IDH")
 
-shinyApp(ui = ui, server = server)
+df3 = inner_join(df, df2, by = NULL, copy = FALSE)
+df3$Year <- as.factor(df3$Year)
+df3$Entity <- as.factor(df3$Entity)
 
 ################
 
@@ -55,12 +48,12 @@ ui <- fluidPage(
             sliderTextInput(inputId = "TIME",
                         label = "Year",
                         grid = TRUE,
-                        choices = levels(dataTotAbo$TIME)
+                        choices = levels(df3$Year)#dataTotAbo$TIME
             ),
             sliderTextInput(inputId = "VAR",
                             label = "Category",
                             grid = TRUE,
-                            choices = levels(data$VAR)
+                            choices = levels(df3$Entity)
             )
         ),
         mainPanel(
@@ -77,25 +70,26 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-    output$plot <- renderPlot({
-        dataTotAbo %>%
-            filter(TIME==input$TIME) %>%
-            ggplot() +
-            geom_bar(aes(LOCATION, Value, fill=LOCATION), stat = "identity") +
-            theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+    output$plot1 <- renderPlot({
+        df3 %>%
+            filter(Year==input$TIME) %>%
+            ggplot(aes(x=Life.Satisfaction, y=IDH, color=Entity)) +
+            geom_point() +
+            ggtitle("Life satifaction vs Human development index") +
+            labs(x="Life satifaction", y="Human development index")
     }) 
     output$plot2 <- renderPlot({
-        data %>%
-            filter(VAR==input$VAR) %>%
-            ggplot() +
-            geom_bar(aes(TIME, Value, fill=TIME), stat = "identity") +
-            theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+        df3 %>%
+            filter(Year==input$TIME) %>%
+            ggplot(aes(x=Life.Satisfaction)) +
+            geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
+            ggtitle("Life Satisfaction")
     })
     output$plot3 <- renderPlot({
-        dataTotAbo %>%
-            filter(TIME==input$TIME) %>%
+        df3 %>%
+            filter(Year==input$TIME) %>%
             ggplot() +
-            geom_bar(aes(LOCATION, Value, fill=LOCATION), stat = "identity") +
+            geom_bar(aes(Entity, IDH, fill=Entity), stat = "identity") +
             theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
     })
 }

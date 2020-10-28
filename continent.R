@@ -11,6 +11,3 @@ df <- df %>% mutate(Entity = replace(Entity, Entity ==  "Micronesia (country)", 
 df$continent <- countrycode(sourcevar = df[, "Entity"],
                             origin = "country.name",
                             destination = "continent")
-#warning
-#In countrycode(sourcevar = df[, "country"], origin = "country.name",  :
-#  Some values were not matched unambiguously: Micronesia (country), Timor

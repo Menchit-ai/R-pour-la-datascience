@@ -10,4 +10,4 @@ df$continent <- countrycode(sourcevar = df[, "Entity"],
                             destination = "continent")
 #warning
 #In countrycode(sourcevar = df[, "country"], origin = "country.name",  :
-#  Some values were not matched unambiguously: Fantasyland
+#  Some values were not matched unambiguously: Micronesia (country), Timor

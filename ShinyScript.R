@@ -10,6 +10,8 @@ library(gridExtra)
 #install.packages("shinyWidgets")
 library(shinyWidgets)
 
+library(countrycode)
+
 df = read.table("data_world/data.csv", header = TRUE, sep = ",")
 colnames(df)[1] <- "LOCATION"
 data <- subset(df, select=c(LOCATION, VAR, TIME, Value))
@@ -39,6 +41,15 @@ df3 = inner_join(df, df2, by = NULL, copy = FALSE)
 df3$Year <- as.factor(df3$Year)
 df3$Entity <- as.factor(df3$Entity)
 
+df3 <- df3 %>% mutate(Entity = replace(Entity, Entity ==  "Timor",  "Timor-Leste"))
+df3 <- df3 %>% mutate(Entity = replace(Entity, Entity ==  "Micronesia (country)",  "Micronesia"))
+
+df3$Continent <- countrycode(sourcevar = df3[, "Entity"],
+                            origin = "country.name",
+                            destination = "continent")
+
+df3$Continent <- as.factor(df3$Continent)
+
 ################
 
 ui <- fluidPage(
@@ -53,7 +64,7 @@ ui <- fluidPage(
             sliderTextInput(inputId = "VAR",
                             label = "Category",
                             grid = TRUE,
-                            choices = levels(df3$Entity)
+                            choices = levels(df3$Continent)
             )
         ),
         mainPanel(
@@ -73,7 +84,7 @@ server <- function(input, output) {
     output$plot1 <- renderPlot({
         df3 %>%
             filter(Year==input$TIME) %>%
-            ggplot(aes(x=Life.Satisfaction, y=IDH, color=Entity)) +
+            ggplot(aes(x=Life.Satisfaction, y=IDH, color=Continent)) +
             geom_point() +
             ggtitle("Life satifaction vs Human development index") +
             labs(x="Life satifaction", y="Human development index")
@@ -81,6 +92,7 @@ server <- function(input, output) {
     output$plot2 <- renderPlot({
         df3 %>%
             filter(Year==input$TIME) %>%
+            filter(Continent==input$VAR) %>%
             ggplot(aes(x=Life.Satisfaction)) +
             geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
             ggtitle("Life Satisfaction")

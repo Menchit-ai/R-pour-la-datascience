@@ -2,10 +2,10 @@ library(leaflet)
 library(geojsonio)
 library(geojsonR)
 
-#install.packages(rgdal)
-#install.packages(spdplyr)
-#install.packages(geojsonio)
-#1install.packages(rmapshaper)
+#install.packages("rgdal")
+#install.packages("spdplyr")
+#install.packages("geojsonio")
+#install.packages("rmapshaper")
 library(rgdal)
 library(spdplyr)
 library(geojsonio)
@@ -44,4 +44,5 @@ m %>% addPolygons(
     dashArray = "",
     fillOpacity = 0.7,
     bringToFront = TRUE))
+
 

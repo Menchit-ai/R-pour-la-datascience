@@ -20,10 +20,10 @@ p = p + geom_point()
 p = p + ggtitle("Life satifaction vs Human development index")
 p = p + labs(x="Life satifaction", y="Human development index")
 
-p
+show(p)
 
 p2 <- ggplot(df3, aes(x=Life.Satisfaction))
 p2 = p2 + geom_histogram(bins=10, colour="black", fill="#e5f5f9")
 p2 = p2 + ggtitle("Life Satisfaction")
 
-p2
+show(p2)

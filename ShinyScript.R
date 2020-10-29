@@ -45,32 +45,20 @@ df3$Continent <- countrycode(sourcevar = df3[, "Entity"],
 
 df3$Continent <- as.factor(df3$Continent)
 
+df4 = filter(df, Year == "2017")
+#names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
+
 ################
 
 world <- geojsonio::geojson_read("world.json", what = "sp")
 
-m <- leaflet(world) %>%
-    setView(-7, 37.8, 1) %>%
-    addProviderTiles("MapBox", options = providerTileOptions(
-        id = "mapbox.light",
-        accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN')))
-
 bins <- c(2, 3, 4, 5, 6, 7, 8)
-pal <- colorBin("YlOrRd", domain = df$Life.Satisfaction, bins = bins)
+pal <- colorBin("YlOrRd", domain = df4$Life.Satisfaction, bins = bins)
 
-m %>% addPolygons(
-    fillColor = ~pal(df$Life.Satisfaction),
-    weight = 2,
-    opacity = 1,
-    color = "white",
-    dashArray = "3",
-    fillOpacity = 0.7,
-    highlight = highlightOptions(
-        weight = 5,
-        color = "#666",
-        dashArray = "",
-        fillOpacity = 0.7,
-        bringToFront = TRUE))
+labels <- sprintf(
+    "<strong>%s</strong><br/>Level of life satisfaction : %g ",
+    df4$Entity, df4$Life.Satisfaction
+) %>% lapply(htmltools::HTML)
 
 ################
 
@@ -126,7 +114,7 @@ server <- function(input, output) {
                 id = "mapbox.light",
                 accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
             addPolygons(
-                fillColor = ~pal(df$Life.Satisfaction),
+                fillColor = ~pal(df4$Life.Satisfaction),
                 weight = 2,
                 opacity = 1,
                 color = "white",
@@ -137,7 +125,18 @@ server <- function(input, output) {
                     color = "#666",
                     dashArray = "",
                     fillOpacity = 0.7,
-                    bringToFront = TRUE))
+                    bringToFront = TRUE),
+                    label = labels,
+                    labelOptions = labelOptions(
+                        style = list("font-weight" = "normal", padding = "3px 8px"),
+                        textsize = "15px",
+                        direction = "auto")) %>%
+            addLegend(
+                pal = pal, 
+                values = ~df4$Life.Satisfaction, 
+                opacity = 0.7, 
+                title = NULL,
+                position = "bottomright")
     })
 }
 

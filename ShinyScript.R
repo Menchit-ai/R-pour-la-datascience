@@ -108,14 +108,15 @@ server <- function(input, output) {
             ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
     output$plot3 <- renderLeaflet({ 
-      df %>% filter(Year==input$TIME)
+      data <- df %>% filter(Year==input$TIME)
+      show(data)
         leaflet(world) %>%
             setView(-7, 37.8, 1) %>%
             addProviderTiles("MapBox", options = providerTileOptions(
                 id = "mapbox.light",
                 accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
             addPolygons(
-                fillColor = ~pal(df4$Life.Satisfaction),
+                fillColor = ~pal(data$Life.Satisfaction),
                 weight = 2,
                 opacity = 1,
                 color = "white",
@@ -134,13 +135,13 @@ server <- function(input, output) {
                         direction = "auto")) %>%
             addLegend(
                 pal = pal, 
-                values = df[df$Life.Satisfaction == input$TIME][3], 
+                values = data$Life.Satisfaction, 
                 opacity = 0.7, 
                 title = NULL,
                 position = "bottomright")
     })
 }
 
-shinyApp(ui = ui, server = server)
+#shinyApp(ui = ui, server = server)
 
 

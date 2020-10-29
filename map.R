@@ -2,10 +2,11 @@ library(shiny)
 library(shinythemes)      # Bootswatch color themes for shiny
 library(choroplethr)      # Creating Choropleth Maps in R
 library(choroplethrMaps)  # Maps used by the choroplethr package
+library(tidyverse)
 
 # load the data set from the choroplethrMaps package
-data('df_state_demographics')
-map_data <- df_state_demographics
+df <- read.table("data_world/happiness-cantril-ladder.csv", header = TRUE, sep = ",")
+names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
 ui <- fluidPage(title = 'My First App!',
                 theme = shinythemes::shinytheme('flatly'),
@@ -14,9 +15,9 @@ ui <- fluidPage(title = 'My First App!',
                   sidebarPanel(width = 3,
                                sliderInput("num_colors",
                                            label = "Number of colors:",
-                                           min = 1,
-                                           max = 9,
-                                           value = 7),
+                                           min = 2005,
+                                           max = 2012,
+                                           value = 2005),
                                selectInput("select", 
                                            label = "Select Demographic:", 
                                            choices = colnames(map_data)[2:9], 
@@ -29,16 +30,16 @@ ui <- fluidPage(title = 'My First App!',
                               tabPanel(title = 'Data Table', 
                                        dataTableOutput(outputId = 'table'))))))
 
-
 server <- function(input, output) {
   
   output$map <- renderPlot({
     
-    map_data$value = map_data[, input$select]
+    data <- df %>% filter(df$Year == input$num_colors)
+    map_data$value = data$Life.Satisfaction
     
-    state_choropleth(map_data,
-                     title = input$select, 
-                     num_colors = input$num_colors)
+    region_choropleth(map_data,
+                     title = 'test', 
+                     num_colors = 4)
   })
   
   output$table <- renderDataTable({

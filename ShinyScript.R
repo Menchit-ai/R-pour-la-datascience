@@ -12,24 +12,19 @@ library(shinyWidgets)
 
 library(countrycode)
 
-df = read.table("data_world/data.csv", header = TRUE, sep = ",")
-colnames(df)[1] <- "LOCATION"
-data <- subset(df, select=c(LOCATION, VAR, TIME, Value))
-summary(data)
-data$LOCATION <- as.factor(data$LOCATION)
-data$VAR <- as.factor(data$VAR)
-data$TIME <- as.factor(data$TIME)
-summary(data)
-dataTotAbo = subset(data, subset= VAR=="BB-P100-TOT")
+library(leaflet)
+library(geojsonio)
+library(geojsonR)
 
-#df = read.table("data_c.csv", header = TRUE, sep = ",")
-#df$VAR = as.factor(df$VAR)
-#dataTotAbo_c = subset(df, subset= VAR=="BB-P100-TOT")
-
-p <- ggplot(dataTotAbo, aes(x=LOCATION, y=Value, color=LOCATION))
-p <- p + geom_point()
-p <- p + facet_wrap(~TIME, ncol=4)
-p <- p + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+#install.packages("rgdal")
+#install.packages("spdplyr")
+#install.packages("geojsonio")
+#install.packages("rmapshaper")
+library(rgdal)
+library(spdplyr)
+library(geojsonio)
+library(rmapshaper)
+library(jsonlite)
 
 df = read.table("data_world/happiness-cantril-ladder.csv", header = TRUE, sep = ",")
 names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
@@ -52,8 +47,35 @@ df3$Continent <- as.factor(df3$Continent)
 
 ################
 
+world <- geojsonio::geojson_read("world.json", what = "sp")
+
+m <- leaflet(world) %>%
+    setView(-7, 37.8, 1) %>%
+    addProviderTiles("MapBox", options = providerTileOptions(
+        id = "mapbox.light",
+        accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN')))
+
+bins <- c(2, 3, 4, 5, 6, 7, 8)
+pal <- colorBin("YlOrRd", domain = df$Life.Satisfaction, bins = bins)
+
+m %>% addPolygons(
+    fillColor = ~pal(df$Life.Satisfaction),
+    weight = 2,
+    opacity = 1,
+    color = "white",
+    dashArray = "3",
+    fillOpacity = 0.7,
+    highlight = highlightOptions(
+        weight = 5,
+        color = "#666",
+        dashArray = "",
+        fillOpacity = 0.7,
+        bringToFront = TRUE))
+
+################
+
 ui <- fluidPage(
-    titlePanel("Total Abo par pays"),
+    titlePanel("Life satifaction vs Human development index"),
     sidebarLayout(
         sidebarPanel(
             sliderTextInput(inputId = "TIME",
@@ -72,10 +94,8 @@ ui <- fluidPage(
             tabsetPanel(type = "tabs",
                         tabPanel("Plot1", plotOutput(outputId = "plot1")),
                         tabPanel("Histo", plotOutput(outputId = "plot2")),
-                        tabPanel("Plot3", plotOutput(outputId = "plot3"))
+                        tabPanel("Plot3", leafletOutput("plot3"))
             )
-            #plotOutput(outputId = "plot"),
-            #plotOutput(outputId = "plot2")
         )
     )
 )
@@ -99,12 +119,25 @@ server <- function(input, output) {
             geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
             ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
-    output$plot3 <- renderPlot({
-        df3 %>%
-            filter(Year==input$TIME) %>%
-            ggplot() +
-            geom_bar(aes(Entity, IDH, fill=Entity), stat = "identity") +
-            theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+    output$plot3 <- renderLeaflet({
+        leaflet(world) %>%
+            setView(-7, 37.8, 1) %>%
+            addProviderTiles("MapBox", options = providerTileOptions(
+                id = "mapbox.light",
+                accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
+            addPolygons(
+                fillColor = ~pal(df$Life.Satisfaction),
+                weight = 2,
+                opacity = 1,
+                color = "white",
+                dashArray = "3",
+                fillOpacity = 0.7,
+                highlight = highlightOptions(
+                    weight = 5,
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7,
+                    bringToFront = TRUE))
     })
 }
 

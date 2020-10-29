@@ -1,53 +1,51 @@
-library(leaflet)
-library(geojsonio)
-library(geojsonR)
+library(shiny)
+library(shinythemes)      # Bootswatch color themes for shiny
+library(choroplethr)      # Creating Choropleth Maps in R
+library(choroplethrMaps)  # Maps used by the choroplethr package
 
-#install.packages(rgdal)
-#install.packages(spdplyr)
-#install.packages(geojsonio)
-#1install.packages(rmapshaper)
-library(rgdal)
-library(spdplyr)
-library(geojsonio)
-library(rmapshaper)
+# load the data set from the choroplethrMaps package
+data('df_state_demographics')
+map_data <- df_state_demographics
 
-
-
-#county <- readOGR(dsn = "C:/Users/thoma/Documents/E4/4101_C R and data visualization/projet-dsia_4101c-r/world.json",
-          #layer = "world", verbose = FALSE)
-
-world <- geojson_read("world.geojson",what="sp")
-
-
-
-
-
-
-
-
-
-stop("Execution ended")
-
-
-world <- geojsonio::geojson_read("world.json", what = "sp")
-world$features <- seq(1,180)
+ui <- fluidPage(title = 'My First App!',
+                theme = shinythemes::shinytheme('flatly'),
+                
+                sidebarLayout(
+                  sidebarPanel(width = 3,
+                               sliderInput("num_colors",
+                                           label = "Number of colors:",
+                                           min = 1,
+                                           max = 9,
+                                           value = 7),
+                               selectInput("select", 
+                                           label = "Select Demographic:", 
+                                           choices = colnames(map_data)[2:9], 
+                                           selected = 1)),
+                  
+                  mainPanel(width = 9, 
+                            tabsetPanel( 
+                              tabPanel(title = 'Output Map', 
+                                       plotOutput(outputId = "map")),
+                              tabPanel(title = 'Data Table', 
+                                       dataTableOutput(outputId = 'table'))))))
 
 
-m <- leaflet(world) %>%
-  #addTiles() %>%
-  setView(40, 3, 1.8) %>%
-  addProviderTiles("MapBox", options = providerTileOptions(
-    id = "mapbox.light",
-    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN')))
+server <- function(input, output) {
+  
+  output$map <- renderPlot({
+    
+    map_data$value = map_data[, input$select]
+    
+    state_choropleth(map_data,
+                     title = input$select, 
+                     num_colors = input$num_colors)
+  })
+  
+  output$table <- renderDataTable({
+    
+    map_data[order(map_data[input$select]), ]
+  })
+}
 
-bins <- c(0,50,100,150,200,Inf)
-pal <- colorBin("YlOrRd", domain = world$features, bins = bins)
 
-m %>% addPolygons(
-  fillColor = ~pal(density),
-  weight = 2,
-  opacity = 1,
-  color = "white",
-  dashArray = "3",
-  fillOpacity = 0.7)
-
+shinyApp(ui, server)

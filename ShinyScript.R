@@ -29,7 +29,7 @@ library(jsonlite)
 df = read.table("data_world/happiness-cantril-ladder.csv", header = TRUE, sep = ",")
 names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
-df2 = read.table("data_world/human-development-index.csv", header = TRUE, sep = ",")
+df2 = read.table("data_world/political-regime-updated2016.csv", header = TRUE, sep = ",")
 names(df2) <- c("Entity", "Code", "Year", "IDH")
 
 df3 = inner_join(df, df2, by = NULL, copy = FALSE)
@@ -69,7 +69,7 @@ ui <- fluidPage(
             sliderTextInput(inputId = "TIME",
                         label = "Year",
                         grid = TRUE,
-                        choices = levels(df3$Year)#dataTotAbo$TIME
+                        choices = levels(df3$Year)
             ),
             sliderTextInput(inputId = "VAR",
                             label = "Category",
@@ -107,7 +107,8 @@ server <- function(input, output) {
             geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
             ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
-    output$plot3 <- renderLeaflet({
+    output$plot3 <- renderLeaflet({ 
+      df %>% filter(Year==input$TIME)
         leaflet(world) %>%
             setView(-7, 37.8, 1) %>%
             addProviderTiles("MapBox", options = providerTileOptions(
@@ -133,7 +134,7 @@ server <- function(input, output) {
                         direction = "auto")) %>%
             addLegend(
                 pal = pal, 
-                values = ~df4$Life.Satisfaction, 
+                values = df[df$Life.Satisfaction == input$TIME][3], 
                 opacity = 0.7, 
                 title = NULL,
                 position = "bottomright")

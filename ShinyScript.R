@@ -85,9 +85,11 @@ server <- function(input, output) {
         df3 %>%
             filter(Year==input$TIME) %>%
             ggplot(aes(x=Life.Satisfaction, y=IDH, color=Continent)) +
-            geom_point() +
-            ggtitle("Life satifaction vs Human development index") +
-            labs(x="Life satifaction", y="Human development index")
+            geom_point(size=4) +
+            ggtitle(paste("Life satifaction vs Human development index in", toString(input$TIME))) +
+            labs(x="Life satifaction", y="Human development index") +
+            #geom_rug(sides ="bl") +
+            theme(legend.position="right")
     }) 
     output$plot2 <- renderPlot({
         df3 %>%
@@ -95,7 +97,7 @@ server <- function(input, output) {
             filter(Continent==input$VAR) %>%
             ggplot(aes(x=Life.Satisfaction)) +
             geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
-            ggtitle("Life Satisfaction")
+            ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
     output$plot3 <- renderPlot({
         df3 %>%

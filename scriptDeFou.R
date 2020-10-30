@@ -94,10 +94,10 @@ ui <- fluidPage(
                     files, selected = files[0]
       ),
       
-      sliderTextInput(inputId = "VAR",
-                      label = "Category",
-                      grid = TRUE,
-                      choices = levels(df3$Continent)
+      selectInput(inputId = "VAR",
+                  label = "Category",
+                  choices = c(levels(df3$Continent),"All"),
+                  selected = levels(df3$Continent)[0]
       )
   ),
   mainPanel(

@@ -1,3 +1,21 @@
+#install.packages("shiny")
+#install.packages("dplyr")
+#install.packages("ggplot2")
+#install.packages("tidyr")
+#install.packages("readr")
+#install.packages("gridExtra")
+#install.packages("shinyWidgets")
+#install.packages("countrycode")
+#install.packages("leaflet")
+#install.packages("geojsonio")
+#install.packages("geojsonR")
+#install.packages("rgdal")
+#install.packages("spdplyr")
+#install.packages("geojsonio")
+#install.packages("rmapshaper")
+#install.packages("jsonlite")
+#install.packages("maps")
+
 library(shiny)
 library(dplyr)
 library(ggplot2)
@@ -15,7 +33,6 @@ library(geojsonio)
 library(rmapshaper)
 library(jsonlite)
 library(maps)
-
 
 files <- list.files("./data_world")
 
@@ -40,9 +57,8 @@ df3$Continent <- countrycode(sourcevar = df3[, "Code"],
                              destination = "continent")
 
 df3$Continent <- as.factor(df3$Continent)
-yeardf <- df$Year %>% unique() %>% sort()
-yeardf2 <- df2$Year %>% unique() %>% sort()
-diffyears <- yeardf[yeardf %in% yeardf2]
+diffyears <- df$Year %>% unique() %>% sort()
+
 
 world$Value <- df$Value[match(world$name, df$Entity)]
 bins <- c(2, 3, 4, 5, 6, 7, 8, 9)

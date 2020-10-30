@@ -26,6 +26,8 @@ library(geojsonio)
 library(rmapshaper)
 library(jsonlite)
 
+library(maps)
+
 df = read.table("data_world/happiness-cantril-ladder.csv", header = TRUE, sep = ",")
 names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
@@ -45,7 +47,15 @@ df3$Continent <- countrycode(sourcevar = df3[, "Entity"],
 
 df3$Continent <- as.factor(df3$Continent)
 
+<<<<<<< HEAD
 df4 = filter(df, Year == "2015")
+=======
+df4 = filter(df, Year == "2017")
+
+yeardf <- df$Year %>% unique() %>% sort()
+yeardf2 <- df2$Year %>% unique() %>% sort()
+diffyears <- yeardf[yeardf %in% yeardf2]
+>>>>>>> 62c273249ab012bcd7d8cb11604cc3ed748aec18
 #names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
 ################
@@ -74,10 +84,8 @@ ui <- fluidPage(
     titlePanel("Life satifaction vs Human development index"),
     sidebarLayout(
         sidebarPanel(
-            sliderTextInput(inputId = "TIME",
-                        label = "Year",
-                        grid = TRUE,
-                        choices = levels(df3$Year)
+            selectInput("TIME", "Select Year", choices = 
+                          diffyears, selected = diffyears[0])
             ),
             sliderTextInput(inputId = "VAR",
                             label = "Category",
@@ -94,7 +102,7 @@ ui <- fluidPage(
             )
         )
     )
-)
+
 
 server <- function(input, output) {
     output$plot1 <- renderPlot({
@@ -116,13 +124,15 @@ server <- function(input, output) {
             ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
     output$plot3 <- renderLeaflet({ 
+<<<<<<< HEAD
       data <- df4 %>% filter(Year==input$TIME)
       show(data)
+=======
+      data <- df %>% filter(Year==input$TIME)
+>>>>>>> 62c273249ab012bcd7d8cb11604cc3ed748aec18
         leaflet(world) %>%
             setView(-7, 37.8, 1) %>%
-            addProviderTiles("MapBox", options = providerTileOptions(
-                id = "mapbox.light",
-                accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
+            addProviderTiles("MapBox") %>%
             addPolygons(
                 fillColor = ~pal(world$Value),
                 weight = 2,

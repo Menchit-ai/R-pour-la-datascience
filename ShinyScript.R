@@ -69,7 +69,7 @@ world$Value <- df$Life.Satisfaction[match(world$name, df$Entity)]
 #show(world$Value)
 
 bins <- c(2, 3, 4, 5, 6, 7, 8, 9)
-pal <- colorBin("YlOrRd", domain = df$Life.Satisfaction, bins = bins)
+pal <- colorBin("GnBu", domain = df$Life.Satisfaction, bins = bins)
 
 labels <- sprintf(
     "<strong>%s</strong><br/>Level of life satisfaction : %g ",

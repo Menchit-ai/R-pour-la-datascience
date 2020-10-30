@@ -45,19 +45,27 @@ df3$Continent <- countrycode(sourcevar = df3[, "Entity"],
 
 df3$Continent <- as.factor(df3$Continent)
 
-df4 = filter(df, Year == "2017")
+df4 = filter(df, Year == "2015")
 #names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
 ################
 
 world <- geojsonio::geojson_read("world.json", what = "sp")
 
+#world$Country <- vapply(strsplit(world$name, ":"), function(x) x[1], FUN.VALUE="a")
+
+world$Value <- df4$Life.Satisfaction[match(world$name, df4$Entity)]
+
+#show(df$Entity)
+#show(world$name)
+#show(world$Value)
+
 bins <- c(2, 3, 4, 5, 6, 7, 8)
 pal <- colorBin("YlOrRd", domain = df4$Life.Satisfaction, bins = bins)
 
 labels <- sprintf(
     "<strong>%s</strong><br/>Level of life satisfaction : %g ",
-    df4$Entity, df4$Life.Satisfaction
+    world$name, world$Value
 ) %>% lapply(htmltools::HTML)
 
 ################
@@ -108,7 +116,7 @@ server <- function(input, output) {
             ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
     output$plot3 <- renderLeaflet({ 
-      data <- df %>% filter(Year==input$TIME)
+      data <- df4 %>% filter(Year==input$TIME)
       show(data)
         leaflet(world) %>%
             setView(-7, 37.8, 1) %>%
@@ -116,12 +124,13 @@ server <- function(input, output) {
                 id = "mapbox.light",
                 accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
             addPolygons(
-                fillColor = ~pal(data$Life.Satisfaction),
+                fillColor = ~pal(world$Value),
                 weight = 2,
                 opacity = 1,
                 color = "white",
                 dashArray = "3",
                 fillOpacity = 0.7,
+                
                 highlight = highlightOptions(
                     weight = 5,
                     color = "#666",
@@ -142,6 +151,6 @@ server <- function(input, output) {
     })
 }
 
-#shinyApp(ui = ui, server = server)
+shinyApp(ui = ui, server = server)
 
 

@@ -28,10 +28,10 @@ library(jsonlite)
 
 library(maps)
 
-df = read.table("data_world/happiness-cantril-ladder.csv", header = TRUE, sep = ",")
+df = read.csv("data_world/happiness-cantril-ladder (1).csv", header = TRUE, sep = ",", encoding="UTF-8")
 names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
-df2 = read.table("data_world/political-regime-updated2016.csv", header = TRUE, sep = ",")
+df2 = read.table("data_world/political-regime-updated2016.csv", header = TRUE, sep = ",", encoding="UTF-8")
 names(df2) <- c("Entity", "Code", "Year", "IDH")
 
 df3 = inner_join(df, df2, by = NULL, copy = FALSE)
@@ -41,8 +41,8 @@ df3$Entity <- as.factor(df3$Entity)
 df3 <- df3 %>% mutate(Entity = replace(Entity, Entity ==  "Timor",  "Timor-Leste"))
 df3 <- df3 %>% mutate(Entity = replace(Entity, Entity ==  "Micronesia (country)",  "Micronesia"))
 
-df3$Continent <- countrycode(sourcevar = df3[, "Entity"],
-                            origin = "country.name",
+df3$Continent <- countrycode(sourcevar = df3[, "Code"],
+                            origin = "iso3c",
                             destination = "continent")
 
 df3$Continent <- as.factor(df3$Continent)
@@ -61,7 +61,8 @@ world <- geojsonio::geojson_read("world.json", what = "sp")
 
 #world$Country <- vapply(strsplit(world$name, ":"), function(x) x[1], FUN.VALUE="a")
 
-world$Value <- df4$Life.Satisfaction[match(world$name, df4$Entity)]
+world$Value <- df$Life.Satisfaction[match(world$name, df$Entity)]
+world$Year <- df$Year[match(world$name, df$Entity)]
 
 #show(df$Entity)
 #show(world$name)
@@ -121,13 +122,13 @@ server <- function(input, output) {
             ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
     output$plot3 <- renderLeaflet({ 
-      data <- df %>% filter(Year==input$TIME)
+      data <- world %>% filter(Year==input$TIME)
       show(data)
         leaflet(world) %>%
             setView(-7, 37.8, 1) %>%
             addProviderTiles("MapBox") %>%
             addPolygons(
-                fillColor = ~pal(data$Life.Satisfaction),
+                fillColor = ~pal(world$Value),
                 weight = 2,
                 opacity = 1,
                 color = "white",

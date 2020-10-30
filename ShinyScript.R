@@ -42,8 +42,8 @@ df3$Entity <- as.factor(df3$Entity)
 df3 <- df3 %>% mutate(Entity = replace(Entity, Entity ==  "Timor",  "Timor-Leste"))
 df3 <- df3 %>% mutate(Entity = replace(Entity, Entity ==  "Micronesia (country)",  "Micronesia"))
 
-df3$Continent <- countrycode(sourcevar = df3[, "Entity"],
-                            origin = "country.name",
+df3$Continent <- countrycode(sourcevar = df3[, "Code"],
+                            origin = "iso3c",
                             destination = "continent")
 
 df3$Continent <- as.factor(df3$Continent)

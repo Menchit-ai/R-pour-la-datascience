@@ -81,7 +81,7 @@ pal <- colorBin("GnBu", domain = df$Value, bins = bins)
 ################
 
 ui <- fluidPage(
-  titlePanel("Life satifaction vs Human development index"),
+  titlePanel("On what depends life satifaction ?"),
   sidebarLayout(
     
     sidebarPanel(

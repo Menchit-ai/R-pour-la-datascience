@@ -131,7 +131,7 @@ server <- function(input, output) {
       ggplot(aes(x=Value, y=NewValue, color=Continent)) +
       geom_point(size=4) +
       ggtitle(paste("Life satifaction vs", substring(input$FILE,1,nchar(input$FILE)-4), "in", toString(input$TIME))) +
-      labs(x="Life satifaction", y=input$FILE) +
+      labs(x="Life satifaction", y=substring(input$FILE,1,nchar(input$FILE)-4)) +
       #geom_rug(sides ="bl") +
       theme(legend.position="right")
   }) 
@@ -152,7 +152,8 @@ server <- function(input, output) {
       filter(Continent==input$VAR) %>%
       ggplot(aes(x=NewValue)) +
       geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
-      ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
+      labs(x="Life satifaction", y=substring(input$FILE,1,nchar(input$FILE)-4)) +
+      ggtitle(paste("Histogram of", substring(input$FILE,1,nchar(input$FILE)-4), "in", toString(input$TIME), "for", toString(input$VAR)))
   })
   output$plot3 <- renderLeaflet({ 
     

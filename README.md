@@ -20,6 +20,7 @@ Pour avoir le dashboard décrit ci-dessus, il faut exécuter le fichier global.R
 Différents packages sont utilisés : shiny, dplyr, ggplot2, tidyr, readr, gridExtra, shinyWidgets, countrycode, leaflet, geojsonio, geojsonR, rgdal, spdplyr, geojsonio, rmapshaper, jsonlite, maps.
 L'installation de es packages peut être faite automatiquement en décommentant les premières lignes d'installation de le global.R où être installé dans l'environnement R en utilisant
 la commande install.packages("XXX") où XXX est le nom du package à installer.
+Il est parfois possible d'obtenir des graphiques vides, ceci sgnifie qu'il n'existe aucune données pour l'année que vous avez demandée.
 
 Developper's Guide :
 Le fichier global.R fait toutes les opérations d'initialisation dont nous avons besoin ainsi que les opérations de mise en forme des données. Si l'on veut ajouter des données à exploiter, il suffit de

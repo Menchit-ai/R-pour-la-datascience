@@ -47,15 +47,12 @@ df3$Continent <- countrycode(sourcevar = df3[, "Entity"],
 
 df3$Continent <- as.factor(df3$Continent)
 
-<<<<<<< HEAD
-df4 = filter(df, Year == "2015")
-=======
 df4 = filter(df, Year == "2017")
 
 yeardf <- df$Year %>% unique() %>% sort()
 yeardf2 <- df2$Year %>% unique() %>% sort()
 diffyears <- yeardf[yeardf %in% yeardf2]
->>>>>>> 62c273249ab012bcd7d8cb11604cc3ed748aec18
+
 #names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
 ################
@@ -124,12 +121,8 @@ server <- function(input, output) {
             ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
     output$plot3 <- renderLeaflet({ 
-<<<<<<< HEAD
       data <- df4 %>% filter(Year==input$TIME)
       show(data)
-=======
-      data <- df %>% filter(Year==input$TIME)
->>>>>>> 62c273249ab012bcd7d8cb11604cc3ed748aec18
         leaflet(world) %>%
             setView(-7, 37.8, 1) %>%
             addProviderTiles("MapBox") %>%

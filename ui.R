@@ -16,7 +16,7 @@ ui <- fluidPage(
       selectInput(inputId = "VAR",
                   label = "Category",
                   choices = c(levels(df3$Continent),"All"),
-                  selected = levels(df3$Continent)[0]
+                  selected = "All"
       )
     ),
     mainPanel(

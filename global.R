@@ -48,3 +48,8 @@ world$Value <- df$Value[match(world$name, df$Entity)]
 bins <- c(2, 3, 4, 5, 6, 7, 8, 9)
 pal <- colorBin("GnBu", domain = df$Value, bins = bins)
 
+
+df <- df %>% mutate(Code = replace(Code, Code ==  "OWID_KOS",  "KOS"))
+df <- df %>% mutate(Code = replace(Code, Code ==  "OWID_CYN",  "CYN"))
+write.csv(df,file="happiness-cantril-ladder.csv")
+

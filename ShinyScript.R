@@ -32,7 +32,7 @@ library(maps)
 df = read.csv("data_world/happiness-cantril-ladder.csv", header = TRUE, sep = ",")
 names(df) <- c("Entity", "Code", "Year", "Life.Satisfaction")
 
-df2 = read.csv("data_world/political-regime-updated2016.csv", header = TRUE, sep = ",")
+df2 = read.csv("data_world/human-development-index.csv", header = TRUE, sep = ",")
 names(df2) <- c("Entity", "Code", "Year", "IDH")
 
 df3 = inner_join(df, df2, by = NULL, copy = FALSE)
@@ -62,14 +62,14 @@ world <- geojsonio::geojson_read("world.json", what = "sp")
 
 #world$Country <- vapply(strsplit(world$name, ":"), function(x) x[1], FUN.VALUE="a")
 
-world$Value <- df$Life.Satisfaction[match(world$name, df$Entity)]
+world$Value <- df$Life.Satisfaction[match(world$id, df$Code)]
 
 #show(df$Entity)
 #show(world$name)
 #show(world$Value)
 
 bins <- c(2, 3, 4, 5, 6, 7, 8, 9)
-pal <- colorBin("YlOrRd", domain = df$Life.Satisfaction, bins = bins)
+pal <- colorBin("GnBu", domain = df$Life.Satisfaction, bins = bins)
 
 labels <- sprintf(
     "<strong>%s</strong><br/>Level of life satisfaction : %g ",
@@ -128,7 +128,7 @@ server <- function(input, output) {
             setView(-7, 37.8, 1) %>%
             addProviderTiles("MapBox") %>%
             addPolygons(
-                fillColor = ~pal(data$Life.Satisfaction[match(world$name, data$Entity)]),
+                fillColor = ~pal(data$Life.Satisfaction[match(world$id, data$Code)]),
                 weight = 2,
                 opacity = 1,
                 color = "white",
@@ -142,7 +142,7 @@ server <- function(input, output) {
                     bringToFront = TRUE),
                     label = sprintf(
                       "<strong>%s</strong><br/>Level of life satisfaction : %g ",
-                      world$name, data$Life.Satisfaction[match(world$name, data$Entity)]
+                      world$name, data$Life.Satisfaction[match(world$id, data$Code)]
                     ) %>% lapply(htmltools::HTML),
                     labelOptions = labelOptions(
                         style = list("font-weight" = "normal", padding = "3px 8px"),
@@ -150,7 +150,7 @@ server <- function(input, output) {
                         direction = "auto")) %>%
             addLegend(
                 pal = pal, 
-                values = data$Life.Satisfaction[match(world$name, data$Entity)], 
+                values = data$Life.Satisfaction[match(world$id, data$Code)], 
                 opacity = 0.7, 
                 title = NULL,
                 position = "bottomright")

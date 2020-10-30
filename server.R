@@ -39,7 +39,7 @@ server <- function(input, output) {
         filter(Continent==input$VAR) %>%
         ggplot(aes(x=NewValue)) +
         geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
-        labs(x="Life satifaction", y=substring(input$FILE,1,nchar(input$FILE)-4)) +
+        labs(x=substring(input$FILE,1,nchar(input$FILE)-4)) +
         ggtitle(paste("Histogram of", substring(input$FILE,1,nchar(input$FILE)-4), "in", toString(input$TIME), "for", toString(input$VAR)))
     }
     
@@ -48,7 +48,7 @@ server <- function(input, output) {
         filter(Year==input$TIME) %>%
         ggplot(aes(x=NewValue)) +
         geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
-        labs(x="Life satifaction", y=substring(input$FILE,1,nchar(input$FILE)-4)) +
+        labs(x=substring(input$FILE,1,nchar(input$FILE)-4)) +
         ggtitle(paste("Histogram of", substring(input$FILE,1,nchar(input$FILE)-4), "in", toString(input$TIME), "for", toString(input$VAR)))
     }
     

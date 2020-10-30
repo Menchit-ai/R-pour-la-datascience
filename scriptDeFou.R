@@ -147,14 +147,27 @@ server <- function(input, output) {
     
     df3$Continent <- as.factor(df3$Continent)
     
-    df3 %>%
-      filter(Year==input$TIME) %>%
-      filter(Continent==input$VAR) %>%
-      ggplot(aes(x=NewValue)) +
-      geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
-      labs(x="Life satifaction", y=substring(input$FILE,1,nchar(input$FILE)-4)) +
-      ggtitle(paste("Histogram of", substring(input$FILE,1,nchar(input$FILE)-4), "in", toString(input$TIME), "for", toString(input$VAR)))
+    if(input$VAR != "All"){
+    
+      df3 %>%
+        filter(Year==input$TIME) %>%
+        filter(Continent==input$VAR) %>%
+        ggplot(aes(x=NewValue)) +
+        geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
+        labs(x="Life satifaction", y=substring(input$FILE,1,nchar(input$FILE)-4)) +
+        ggtitle(paste("Histogram of", substring(input$FILE,1,nchar(input$FILE)-4), "in", toString(input$TIME), "for", toString(input$VAR)))
+    }
+    else{
+      
+      df3 %>%
+        filter(Year==input$TIME) %>%
+        ggplot(aes(x=NewValue)) +
+        geom_histogram(bins=10, colour="black", fill="#e5f5f9") +
+        labs(x="Life satifaction", y=substring(input$FILE,1,nchar(input$FILE)-4)) +
+        ggtitle(paste("Histogram of", substring(input$FILE,1,nchar(input$FILE)-4), "in", toString(input$TIME), "for", toString(input$VAR)))
+    }
   })
+    
   output$plot3 <- renderLeaflet({ 
     
     df2 <- read.csv(paste("./data_world/",input$FILE,sep=""), header = TRUE, sep = ",")

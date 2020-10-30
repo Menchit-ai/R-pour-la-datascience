@@ -1,3 +1,22 @@
+library(shiny)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(readr)
+library(gridExtra)
+library(shinyWidgets)
+library(countrycode)
+library(leaflet)
+library(geojsonio)
+library(geojsonR)
+library(rgdal)
+library(spdplyr)
+library(geojsonio)
+library(rmapshaper)
+library(jsonlite)
+library(maps)
+
+
 files <- list.files("./data_world")
 
 world <- geojsonio::geojson_read("world.json", what = "sp")

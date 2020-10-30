@@ -121,13 +121,13 @@ server <- function(input, output) {
             ggtitle(paste("Histogram of life satisfaction in", toString(input$TIME), "for", toString(input$VAR)))
     })
     output$plot3 <- renderLeaflet({ 
-      data <- df4 %>% filter(Year==input$TIME)
+      data <- df %>% filter(Year==input$TIME)
       show(data)
         leaflet(world) %>%
             setView(-7, 37.8, 1) %>%
             addProviderTiles("MapBox") %>%
             addPolygons(
-                fillColor = ~pal(world$Value),
+                fillColor = ~pal(data$Life.Satisfaction),
                 weight = 2,
                 opacity = 1,
                 color = "white",

@@ -1,32 +1,3 @@
-#install.packages("rgdal")
-#install.packages("spdplyr")
-#install.packages("geojsonio")
-#install.packages("rmapshaper")
-#library(gapminder)
-#install.packages("gridExtra")
-#install.packages("shinyWidgets")
-
-library(shiny)
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-library(readr)
-library(gridExtra)
-library(shinyWidgets)
-library(countrycode)
-library(leaflet)
-library(geojsonio)
-library(geojsonR)
-library(rgdal)
-library(spdplyr)
-library(geojsonio)
-library(rmapshaper)
-library(jsonlite)
-library(maps)
-
-
-# INITIALISATION 
-
 files <- list.files("./data_world")
 
 world <- geojsonio::geojson_read("world.json", what = "sp")
@@ -57,55 +28,6 @@ diffyears <- yeardf[yeardf %in% yeardf2]
 world$Value <- df$Value[match(world$name, df$Entity)]
 bins <- c(2, 3, 4, 5, 6, 7, 8, 9)
 pal <- colorBin("GnBu", domain = df$Value, bins = bins)
-##################
-
-
-
-#names(df) <- c("Entity", "Code", "Year", "Value")
-
-################
-
-
-#world$Country <- vapply(strsplit(world$name, ":"), function(x) x[1], FUN.VALUE="a")
-#show(df$Entity)
-#show(world$name)
-#show(world$Value)
-
-
-
-################
-
-ui <- fluidPage(
-  titlePanel("On what depends life satifaction ?"),
-  sidebarLayout(
-    
-    sidebarPanel(
-      
-      selectInput("TIME", "Select Year", choices = 
-                    diffyears, selected = diffyears[0]
-      ),
-    
-      selectInput("FILE", "Choose a file to compare", choices=
-                    files, selected = files[0]
-      ),
-      
-      selectInput(inputId = "VAR",
-                  label = "Category",
-                  choices = c(levels(df3$Continent),"All"),
-                  selected = levels(df3$Continent)[0]
-      )
-  ),
-  mainPanel(
-    
-    tabsetPanel(type = "tabs",
-                tabPanel("Plot1", plotOutput(outputId = "plot1")),
-                tabPanel("Histo", plotOutput(outputId = "plot2")),
-                tabPanel("Plot3", leafletOutput("plot3"))
-    )
-  )
-  )
-)
-
 
 server <- function(input, output) {
   
@@ -201,7 +123,3 @@ server <- function(input, output) {
         position = "bottomright")
   })
 }
-
-shinyApp(ui = ui, server = server)
-
-
